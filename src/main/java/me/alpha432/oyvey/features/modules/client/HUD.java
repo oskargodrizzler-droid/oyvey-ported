@@ -1,21 +1,21 @@
 package me.alpha432.oyvey.features.modules.client;
 
+import me.alpha432.oyvey.OyVey;
 import me.alpha432.oyvey.features.modules.Module;
 import me.alpha432.oyvey.features.setting.Setting;
-import me.alpha432.oyvey.OyVey;
 
 public class HUD extends Module {
-    
+
     public Setting<Boolean> arrayList = register(new Setting<>("ArrayList", true));
     public Setting<Integer> x = register(new Setting<>("X", 10, 0, 1000));
     public Setting<Integer> y = register(new Setting<>("Y", 10, 0, 1000));
     public Setting<Boolean> watermark = register(new Setting<>("Watermark", true));
-    
+
     public HUD() {
         super("HUD", "Shows info on screen", Module.Category.CLIENT);
         setEnabled(true);
     }
-    
+
     @Override
     public void onRender2D() {
         if (arrayList.getValue()) {
@@ -28,10 +28,10 @@ public class HUD extends Module {
                 }
             }
         }
-        
+
         if (watermark.getValue()) {
-            String watermark = "oyvey-ported | " + mc.player.getName().getString();
-            mc.textRenderer.draw(watermark, 5, 5, 0xFFFF5555);
+            String text = "oyvey-ported | " + mc.player.getName().getString();
+            mc.textRenderer.draw(text, 5, 5, 0xFFFF5555);
         }
     }
 }
