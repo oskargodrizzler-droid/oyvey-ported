@@ -22,12 +22,6 @@ import me.alpha432.oyvey.features.modules.player.FastPlaceModule;
 import me.alpha432.oyvey.features.modules.player.NoFallModule;
 import me.alpha432.oyvey.features.modules.player.VelocityModule;
 import me.alpha432.oyvey.features.modules.render.BlockHighlightModule;
-import me.alpha432.oyvey.util.traits.Jsonable;
-import me.alpha432.oyvey.util.traits.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-// ========== NEW MODULE IMPORTS ==========
 import me.alpha432.oyvey.features.modules.combat.AimAssist;
 import me.alpha432.oyvey.features.modules.combat.Triggerbot;
 import me.alpha432.oyvey.features.modules.movement.Flight;
@@ -35,7 +29,10 @@ import me.alpha432.oyvey.features.modules.movement.Speed;
 import me.alpha432.oyvey.features.modules.movement.LongJump;
 import me.alpha432.oyvey.features.modules.client.ClickGUIModule;
 import me.alpha432.oyvey.features.modules.client.HUD;
-// ======================================
+import me.alpha432.oyvey.util.traits.Jsonable;
+import me.alpha432.oyvey.util.traits.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -47,7 +44,7 @@ public class ModuleManager implements Jsonable, Util {
     private final List<Module> modules = new ArrayList<>();
 
     public void init() {
-        // ========== EXISTING MODULES ==========
+        // Existing modules
         register(new WatermarkHudModule());
         register(new CoordinatesHudModule());
         register(new HudEditorModule());
@@ -62,23 +59,18 @@ public class ModuleManager implements Jsonable, Util {
         register(new BlockHighlightModule());
         register(new NoFallModule());
         register(new KeyPearlModule());
-        
-        // ========== NEW COMBAT MODULES ==========
+
+        // New modules
         register(new AimAssist());
         register(new Triggerbot());
-        
-        // ========== NEW MOVEMENT MODULES ==========
         register(new Flight());
         register(new Speed());
         register(new LongJump());
-        
-        // ========== NEW CLIENT MODULES ==========
-        register(new ClickGUIModule());  // Opens your Aimbot GUI
-        register(new HUD());              // ArrayList & Watermark
+        register(new ClickGUIModule());
+        register(new HUD());
 
         LOGGER.info("Registered {} modules", modules.size());
 
-        // Create a command for each module for modules to be configurable via command line
         for (Module module : modules) {
             OyVey.commandManager.register(new ModuleCommand(module));
         }
