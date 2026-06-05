@@ -2,65 +2,46 @@ package me.alpha432.oyvey.features.modules.movement;
 
 import me.alpha432.oyvey.features.modules.Module;
 import me.alpha432.oyvey.features.setting.Setting;
-import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.math.Vec3d;
 
 public class LongJump extends Module {
-    
-    public Setting<Float> speed = register(new Setting<>("Speed", 2.0f, 1.0f, 5.0f));
-    public Setting<Float> height = register(new Setting<>("Height", 1.2f, 0.5f, 2.0f));
-    public Setting<Boolean> lagCompensate = register(new Setting<>("Lag Compensate", true));
-    
-    private int jumpTicks = 0;
-    private boolean hasJumped = false;
-    
+
+    public Setting<Float> boost = register(new Setting<>("Boost", 1.5f, 1.0f, 3.0f));
+    public Setting<Boolean> autoJump = register(new Setting<>("Auto Jump", true));
+
+    private boolean jumped = false;
+
     public LongJump() {
         super("LongJump", "Jump further and higher", Module.Category.MOVEMENT);
     }
-    
+
     @Override
     public void onUpdate() {
         if (mc.player == null) return;
-        
-        if (mc.player.isOnGround() && !hasJumped) {
+
+        if (autoJump.getValue() && mc.player.isOnGround() && !jumped) {
             mc.player.jump();
-            hasJumped = true;
-            jumpTicks = 0;
+            jumped = true;
         }
-        
-        if (hasJumped && !mc.player.isOnGround()) {
-            jumpTicks++;
-            
-            // Apply motion for the first few ticks
-            if (jumpTicks <= 10) {
-                float yaw = mc.player.getYaw();
-                float forward = mc.player.forwardSpeed;
-                float strafe = mc.player.sidewaysSpeed;
-                
-                double rad = Math.toRadians(yaw);
-                double boost = speed.getValue() * 0.3;
-                
-                double addX = (forward * boost * Math.cos(rad) + strafe * boost * Math.sin(rad));
-                double addZ = (forward * boost * Math.sin(rad) - strafe * boost * Math.cos(rad));
-                
-                Vec3d vel = mc.player.getVelocity();
-                mc.player.setVelocity(vel.x + addX, height.getValue() * 0.3, vel.z + addZ);
-                
-                if (lagCompensate.getValue()) {
-                    sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(
-                        mc.player.getX() + addX,
-                        mc.player.getY() + 0.42,
-                        mc.player.getZ() + addZ,
-                        false
-                    ));
-                }
-            }
+
+        if (!mc.player.isOnGround() && jumped) {
+            double boostValue = boost.getValue();
+            Vec3d velocity = mc.player.getVelocity();
+            float yaw = mc.player.getYaw();
+            float forward = mc.player.forwardSpeed;
+            float strafe = mc.player.sidewaysSpeed;
+
+            double rad = Math.toRadians(yaw);
+            double newX = velocity.x + (forward * boostValue * Math.cos(rad) + strafe * boostValue * Math.sin(rad));
+            double newZ = velocity.z + (forward * boostValue * Math.sin(rad) - strafe * boostValue * Math.cos(rad));
+
+            mc.player.setVelocity(newX, velocity.y, newZ);
+            jumped = false;
         }
     }
-    
+
     @Override
     public void onDisable() {
-        hasJumped = false;
-        jumpTicks = 0;
+        jumped = false;
     }
 }
