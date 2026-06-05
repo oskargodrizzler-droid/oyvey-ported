@@ -7,6 +7,5 @@
     "entity.PlayerEntityMixin",
     "entity.LivingEntityMixin",
     "network.ClientPlayerEntityMixin",
-    ...
   ]
 }
